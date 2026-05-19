@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/xampp/htdocs/cloudware/**)",
+      "Bash(composer create-project:*)",
+      "Bash(dir c:/xampp/htdocs/cloudware/imole/)",
+      "Bash(powershell -Command \"Get-ChildItem -Path 'c:/xampp/htdocs/cloudware/imole' -Force | Select-Object Name, Mode\")",
+      "Bash(powershell -Command \"Move-Item -Path 'c:/xampp/htdocs/cloudware/imole_temp/*' -Destination 'c:/xampp/htdocs/cloudware/imole/' -Force\")",
+      "Bash(powershell -Command \"Move-Item -Path 'c:/xampp/htdocs/cloudware/imole_temp/.[!.]*' -Destination 'c:/xampp/htdocs/cloudware/imole/' -Force -ErrorAction SilentlyContinue; Remove-Item 'c:/xampp/htdocs/cloudware/imole_temp' -Force -Recurse\")",
+      "Bash(composer require:*)",
+      "Bash(php artisan:*)",
+      "Read(//c/xampp/mysql/bin/**)",
+      "Bash(./mysql.exe -u root -e \"CREATE DATABASE IF NOT EXISTS imole_award CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
+      "Bash(composer show:*)"
+    ]
+  }
+}
