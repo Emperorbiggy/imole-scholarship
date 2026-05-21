@@ -16,6 +16,7 @@ export default function PrivateSchool() {
     const [codeError,         setCodeError]          = useState('');
     const [codeChecking,      setCodeChecking]       = useState(false);
     const [bankResolving,     setBankResolving]      = useState(false);
+    const [accountDuplicate,  setAccountDuplicate]   = useState(false);
     const [schoolMismatch,    setSchoolMismatch]     = useState(false);
     const [schoolMismatchSeen,setSchoolMismatchSeen] = useState(false);
 
@@ -247,12 +248,14 @@ export default function PrivateSchool() {
                             accountNumberLabel="School Account Number"
                             accountNameLabel="School Account Name"
                             onResolvingChange={setBankResolving}
+                            registrationType="private_school"
+                            onDuplicateChange={setAccountDuplicate}
                         />
                     </div>
                 </div>
 
                 <div className="pt-4">
-                    <SubmitButton accentColor="violet" loading={processing} disabled={processing || bankResolving}>
+                    <SubmitButton accentColor="violet" loading={processing} disabled={processing || bankResolving || accountDuplicate}>
                         {bankResolving ? 'Please wait while we verify your account number…' : 'Submit Registration'}
                     </SubmitButton>
                 </div>

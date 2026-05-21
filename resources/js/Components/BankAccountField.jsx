@@ -39,6 +39,8 @@ export default function BankAccountField({
     bankLabel          = 'Bank',
     onResolvingChange  = null,
     onBankName         = null,
+    registrationType   = null,
+    onDuplicateChange  = null,
 }) {
     const [banks, setBanks]             = useState([]);
     const [banksLoading, setBanksLoading] = useState(true);
@@ -47,7 +49,8 @@ export default function BankAccountField({
     const [resolveError, setResolveError] = useState('');
 
     // Modal state
-    const [modal, setModal] = useState(null); // { resolvedName }
+    const [modal, setModal]       = useState(null); // { resolvedName }
+    const [dupModal, setDupModal] = useState(false);
 
     const debounceRef = useRef(null);
 
@@ -77,6 +80,7 @@ export default function BankAccountField({
             setResolveState(RESOLVE_STATE.IDLE);
             setResolveError('');
             onResolvingChange?.(false);
+            onDuplicateChange?.(false);
             return;
         }
 
@@ -87,6 +91,22 @@ export default function BankAccountField({
         clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(async () => {
             try {
+                // Check for duplicate account number in our DB first
+                if (registrationType) {
+                    const dupRes = await axios.post(route('check.account'), {
+                        account_number: accountNumber,
+                        type: registrationType,
+                    });
+                    if (dupRes.data.duplicate) {
+                        setResolveState(RESOLVE_STATE.ERROR);
+                        setResolveError('This account number is already registered.');
+                        setDupModal(true);
+                        onResolvingChange?.(false);
+                        onDuplicateChange?.(true);
+                        return;
+                    }
+                }
+
                 const res  = await axios.post(route('paystack.resolve'), {
                     account_number: accountNumber,
                     bank_code:      bank,
@@ -232,6 +252,37 @@ export default function BankAccountField({
                 )}
                 {errors.account_name && <p className="mt-1 text-xs text-red-400">{errors.account_name}</p>}
             </div>
+
+            {/* Duplicate Account Modal */}
+            {dupModal && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+                    <div className="relative w-full max-w-sm bg-slate-900 border border-red-500/30 rounded-2xl p-6 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                                <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-white font-semibold text-base">Account Already Registered</h3>
+                                <p className="text-slate-400 text-xs">Duplicate entry detected</p>
+                            </div>
+                        </div>
+                        <p className="text-slate-400 text-sm mb-5 text-center">
+                            This account number is already linked to an existing registration. Please use a different account number or contact the Imole Award team if you believe this is an error.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => { setDupModal(false); onAccountNumber(''); onAccountName(''); setResolveState(RESOLVE_STATE.IDLE); setResolveError(''); onDuplicateChange?.(false); }}
+                            className="w-full py-2.5 rounded-xl border border-white/10 text-slate-300 text-sm font-medium hover:bg-white/5 transition-colors"
+                        >
+                            Close &amp; Correct
+                        </button>
+                    </div>
+                </div>,
+                document.body
+            )}
 
             {/* Confirmation Modal — rendered via portal so overflow-hidden on parent can't clip it */}
             {modal && createPortal(

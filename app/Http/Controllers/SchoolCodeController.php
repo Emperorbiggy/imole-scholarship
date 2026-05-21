@@ -47,7 +47,7 @@ class SchoolCodeController extends Controller
         return back()->with('success', 'Code deleted.');
     }
 
-    // Public — called via AJAX from school registration forms
+    // Public — called via AJAX from registration forms
     public function verify(Request $request)
     {
         $request->validate(['code' => 'required|string']);
@@ -58,7 +58,10 @@ class SchoolCodeController extends Controller
             return response()->json(['valid' => false, 'message' => 'Invalid access code.'], 422);
         }
 
-        if ($schoolCode->used) {
+        // Teachers may reuse a code after the school has registered with it
+        $forTeacher = $request->input('for') === 'teacher';
+
+        if (!$forTeacher && $schoolCode->used) {
             return response()->json(['valid' => false, 'message' => 'This code has already been used.'], 422);
         }
 

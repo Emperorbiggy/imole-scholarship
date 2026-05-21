@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import axios from 'axios';
 
 const STATE = {
@@ -9,16 +10,17 @@ const STATE = {
     SERVICE:  'service', // service unavailable — non-blocking
 };
 
-export default function NINField({ value, onChange, error, onVerified, nameMismatch }) {
-    const [status, setStatus]   = useState(STATE.IDLE);
-    const [message, setMessage] = useState('');
-    const debounceRef           = useRef(null);
+export default function NINField({ value, onChange, error, onVerified, nameMismatch, registrationType, onDuplicateChange }) {
+    const [status, setStatus]     = useState(STATE.IDLE);
+    const [message, setMessage]   = useState('');
+    const [dupModal, setDupModal] = useState(false);
+    const debounceRef             = useRef(null);
 
     useEffect(() => {
-        // Only trigger when exactly 11 digits entered
         if (value.length !== 11) {
             setStatus(STATE.IDLE);
             setMessage('');
+            onDuplicateChange?.(false);
             return;
         }
 
@@ -28,12 +30,27 @@ export default function NINField({ value, onChange, error, onVerified, nameMisma
         clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(async () => {
             try {
+                // 1. Check for duplicate in our DB first
+                if (registrationType) {
+                    const dupRes = await axios.post(route('check.nin'), { nin: value, type: registrationType });
+                    if (dupRes.data.duplicate) {
+                        setStatus(STATE.ERROR);
+                        setMessage('This NIN is already registered.');
+                        setDupModal(true);
+                        onVerified?.(null);
+                        onDuplicateChange?.(true);
+                        return;
+                    }
+                }
+
+                // 2. Verify with Prembly
                 const res  = await axios.post(route('verify.nin'), { nin: value });
                 const data = res.data;
 
                 if (data.verified) {
                     setStatus(STATE.SUCCESS);
                     setMessage('NIN verified successfully');
+                    onDuplicateChange?.(false);
                     onVerified?.({
                         first_name:  data.first_name  ?? '',
                         middle_name: data.middle_name ?? '',
@@ -91,7 +108,6 @@ export default function NINField({ value, onChange, error, onVerified, nameMisma
                     className={`w-full px-4 py-3 pr-11 rounded-xl bg-white/10 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-colors text-sm ${statusStyles[status]}`}
                 />
 
-                {/* Right icon */}
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     {status === STATE.LOADING && (
                         <svg className="animate-spin w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24">
@@ -122,7 +138,6 @@ export default function NINField({ value, onChange, error, onVerified, nameMisma
                 </div>
             </div>
 
-            {/* Status message */}
             {status === STATE.SUCCESS && nameMismatch && (
                 <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
                     Name mismatch — please correct your name or use the right NIN
@@ -138,11 +153,41 @@ export default function NINField({ value, onChange, error, onVerified, nameMisma
                 </p>
             )}
 
-            {/* Digit counter */}
             <p className="mt-1 text-xs text-slate-600 text-right">{value.length}/11</p>
 
-            {/* Validation error from server */}
             {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+
+            {/* Duplicate NIN Modal */}
+            {dupModal && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+                    <div className="relative w-full max-w-sm bg-slate-900 border border-red-500/30 rounded-2xl p-6 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                                <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-white font-semibold text-base">NIN Already Registered</h3>
+                                <p className="text-slate-400 text-xs">Duplicate entry detected</p>
+                            </div>
+                        </div>
+                        <p className="text-slate-400 text-sm mb-5 text-center">
+                            A registration with this NIN already exists in our system. Each person can only register once.
+                            If you believe this is an error, please contact the Imole Award team.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => setDupModal(false)}
+                            className="w-full py-2.5 rounded-xl border border-white/10 text-slate-300 text-sm font-medium hover:bg-white/5 transition-colors"
+                        >
+                            Close &amp; Correct
+                        </button>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 }

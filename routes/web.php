@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AwardeeController;
+use App\Http\Controllers\DuplicateCheckController;
 use App\Http\Controllers\SchoolCodeController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\PrivateSchoolController;
@@ -43,6 +44,10 @@ Route::post('/register/public-school', [PublicSchoolController::class, 'store'])
 
 // School code verification (public AJAX — used by registration forms)
 Route::post('/school-code/verify', [SchoolCodeController::class, 'verify'])->name('school-code.verify');
+
+// Duplicate checks (public AJAX)
+Route::post('/check/nin',     [DuplicateCheckController::class, 'checkNin'])->name('check.nin');
+Route::post('/check/account', [DuplicateCheckController::class, 'checkAccount'])->name('check.account');
 
 // NIN Verification (AJAX)
 Route::post('/verify/nin', [NINVerificationController::class, 'verify'])->name('verify.nin');

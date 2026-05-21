@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Teacher;
+use App\Models\SchoolCode;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,6 +17,7 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'school_code'        => 'required|string|exists:school_codes,code',
             'surname'            => 'required|string|max:100',
             'first_name'         => 'required|string|max:100',
             'middle_name'        => 'nullable|string|max:100',
@@ -29,6 +31,9 @@ class TeacherController extends Controller
             'bank_name'          => 'required|string|max:100',
         ]);
 
+        // Resolve the school name from the code (teacher may use used codes)
+        $codeRecord = SchoolCode::where('code', $validated['school_code'])->firstOrFail();
+
         $path = $request->file('appointment_letter')->store('appointment_letters', 'public');
 
         $acc    = strtolower($validated['account_name']);
@@ -37,10 +42,11 @@ class TeacherController extends Controller
                   ? 'verified' : 'pending';
 
         Teacher::create([
+            'school_code'             => $validated['school_code'],
             'surname'                 => $validated['surname'],
             'first_name'              => $validated['first_name'],
             'middle_name'             => $validated['middle_name'] ?? null,
-            'school'                  => $validated['school'],
+            'school'                  => $codeRecord->school_name,
             'nin'                     => $validated['nin'],
             'subjects_taught'         => $validated['subjects_taught'],
             'appointment_letter_path' => $path,

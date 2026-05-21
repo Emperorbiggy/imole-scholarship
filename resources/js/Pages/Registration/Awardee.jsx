@@ -11,10 +11,12 @@ function nameMatch(entered, verified) {
 }
 
 export default function Awardee() {
-    const [bankResolving, setBankResolving] = useState(false);
-    const [ninVerified, setNinVerified]     = useState(false);
-    const [mismatch, setMismatch]           = useState(false); // modal open
-    const [ninHasMismatch, setNinHasMismatch] = useState(false); // persists after modal close
+    const [bankResolving, setBankResolving]   = useState(false);
+    const [ninVerified, setNinVerified]       = useState(false);
+    const [mismatch, setMismatch]             = useState(false);
+    const [ninHasMismatch, setNinHasMismatch] = useState(false);
+    const [ninDuplicate, setNinDuplicate]     = useState(false);
+    const [accountDuplicate, setAccountDuplicate] = useState(false);
 
     const { data, setData, post, processing, errors, setError, clearErrors } = useForm({
         surname:        '',
@@ -111,10 +113,12 @@ export default function Awardee() {
 
                         <NINField
                             value={data.nin}
-                            onChange={val => { setData('nin', val); setNinVerified(false); setMismatch(false); setNinHasMismatch(false); }}
+                            onChange={val => { setData('nin', val); setNinVerified(false); setMismatch(false); setNinHasMismatch(false); setNinDuplicate(false); }}
                             error={errors.nin}
                             onVerified={handleNINVerified}
                             nameMismatch={ninHasMismatch}
+                            registrationType="awardee"
+                            onDuplicateChange={setNinDuplicate}
                         />
                     </div>
                 </div>
@@ -134,12 +138,14 @@ export default function Awardee() {
                             errors={{ account_number: errors.account_number, account_name: errors.account_name, bank: errors.bank }}
                             accentColor="amber"
                             onResolvingChange={setBankResolving}
+                            registrationType="awardee"
+                            onDuplicateChange={setAccountDuplicate}
                         />
                     </div>
                 </div>
 
                 <div className="pt-4">
-                    <SubmitButton accentColor="amber" loading={processing} disabled={processing || bankResolving || ninHasMismatch}>
+                    <SubmitButton accentColor="amber" loading={processing} disabled={processing || bankResolving || ninHasMismatch || ninDuplicate || accountDuplicate}>
                         {bankResolving ? 'Please wait while we verify your account number…' : 'Submit Registration'}
                     </SubmitButton>
                     <p className="text-center text-slate-600 text-xs mt-3">Max 270 entries accepted for this category</p>

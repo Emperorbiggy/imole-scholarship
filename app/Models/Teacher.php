@@ -10,6 +10,7 @@ class Teacher extends Model
         'surname',
         'first_name',
         'middle_name',
+        'school_code',
         'school',
         'nin',
         'subjects_taught',

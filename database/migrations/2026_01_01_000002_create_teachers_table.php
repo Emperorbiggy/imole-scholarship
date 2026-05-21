@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('surname');
             $table->string('first_name');
             $table->string('middle_name')->nullable();
+            $table->string('school_code')->nullable();
             $table->string('school');
             $table->string('nin');
             $table->text('subjects_taught');
