@@ -41,6 +41,10 @@ export default function PrivateSchool() {
         try {
             const res = await axios.post(route('school-code.verify'), { code: codeInput.trim().toUpperCase() });
             if (res.data.valid) {
+                if (res.data.school_type !== 'private') {
+                    setCodeError('This code is for a public school. Please use the correct registration page.');
+                    return;
+                }
                 setData(d => ({ ...d, school_code: codeInput.trim().toUpperCase(), school: res.data.school_name }));
                 setCodeVerified(true);
             } else {

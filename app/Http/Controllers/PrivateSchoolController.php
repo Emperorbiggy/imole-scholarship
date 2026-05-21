@@ -37,6 +37,10 @@ class PrivateSchoolController extends Controller
             return back()->withErrors(['school_code' => 'This access code is invalid or has already been used.']);
         }
 
+        if ($codeRecord->school_type !== 'private') {
+            return back()->withErrors(['school_code' => 'This code is not valid for private school registration.']);
+        }
+
         $path   = $request->file('harmonized_bill')->store('harmonized_bills', 'public');
         $acc    = strtolower($validated['school_account_name']);
         $school = strtolower($validated['school']);

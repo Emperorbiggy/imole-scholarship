@@ -35,6 +35,10 @@ class PublicSchoolController extends Controller
             return back()->withErrors(['school_code' => 'This access code is invalid or has already been used.']);
         }
 
+        if ($codeRecord->school_type !== 'public') {
+            return back()->withErrors(['school_code' => 'This code is not valid for public school registration.']);
+        }
+
         $acc    = strtolower($validated['school_account_name']);
         $school = strtolower($validated['school']);
         $status = str_contains($acc, $school) || str_contains($school, $acc) ? 'verified' : 'pending';
