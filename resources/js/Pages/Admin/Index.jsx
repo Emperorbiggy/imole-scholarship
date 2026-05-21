@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import AdminLayout from '@/Components/AdminLayout';
 
 const TYPE_META = {
     awardee:        { label: 'Awardee',        color: 'amber',  bg: 'bg-amber-500/15',  text: 'text-amber-400',  border: 'border-amber-500/30' },
@@ -37,7 +38,6 @@ export default function AdminIndex({ registrations, counts }) {
     const [typeFilter,   setTypeFilter]   = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
     const [search,       setSearch]       = useState('');
-    const { post: logout } = useForm();
 
     const filtered = useMemo(() => {
         return registrations.filter(r => {
@@ -60,34 +60,9 @@ export default function AdminIndex({ registrations, counts }) {
     ];
 
     return (
-        <>
+        <AdminLayout title="Registrations">
             <Head title="Admin — Imole Award 2026" />
-            <div className="min-h-screen bg-slate-950 text-white">
-
-                {/* Top bar */}
-                <header className="border-b border-white/10 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-20">
-                    <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-300 flex items-center justify-center">
-                                <svg className="w-4 h-4 text-amber-900" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">Imole Award 2026</p>
-                                <h1 className="text-sm font-bold text-white leading-none">Admin Panel</h1>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => logout(route('admin.logout'))}
-                            className="text-xs text-slate-500 hover:text-red-400 transition-colors flex items-center gap-1"
-                        >
-                            Sign Out
-                        </button>
-                    </div>
-                </header>
-
-                <div className="max-w-7xl mx-auto px-6 py-8">
+            <div>
 
                     {/* Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -212,8 +187,7 @@ export default function AdminIndex({ registrations, counts }) {
                             </div>
                         )}
                     </div>
-                </div>
             </div>
-        </>
+        </AdminLayout>
     );
 }

@@ -11,6 +11,7 @@ class PrivateSchool extends Model
         'first_name',
         'middle_name',
         'school',
+        'school_code',
         'harmonized_bill_path',
         'tax_clearance_no',
         'school_account_number',

@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('school');
+            $table->string('school_code', 8);
             $table->string('school_account_number');
             $table->string('school_account_name');
             $table->string('bank');

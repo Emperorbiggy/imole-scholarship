@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\PublicSchool;
+use App\Models\SchoolCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PublicSchoolController extends Controller
@@ -16,6 +18,7 @@ class PublicSchoolController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'school_code'           => 'required|string|exists:school_codes,code',
             'surname'               => 'required|string|max:100',
             'first_name'            => 'required|string|max:100',
             'middle_name'           => 'nullable|string|max:100',
@@ -26,21 +29,32 @@ class PublicSchoolController extends Controller
             'bank_name'             => 'required|string|max:100',
         ]);
 
+        $codeRecord = SchoolCode::where('code', $validated['school_code'])->lockForUpdate()->first();
+
+        if (!$codeRecord || $codeRecord->used) {
+            return back()->withErrors(['school_code' => 'This access code is invalid or has already been used.']);
+        }
+
         $acc    = strtolower($validated['school_account_name']);
         $school = strtolower($validated['school']);
         $status = str_contains($acc, $school) || str_contains($school, $acc) ? 'verified' : 'pending';
 
-        PublicSchool::create([
-            'surname'               => $validated['surname'],
-            'first_name'            => $validated['first_name'],
-            'middle_name'           => $validated['middle_name'] ?? null,
-            'school'                => $validated['school'],
-            'school_account_number' => $validated['school_account_number'],
-            'school_account_name'   => $validated['school_account_name'],
-            'bank'                  => $validated['bank'],
-            'bank_name'             => $validated['bank_name'],
-            'status'                => $status,
-        ]);
+        DB::transaction(function () use ($validated, $status, $codeRecord) {
+            PublicSchool::create([
+                'surname'               => $validated['surname'],
+                'first_name'            => $validated['first_name'],
+                'middle_name'           => $validated['middle_name'] ?? null,
+                'school'                => $validated['school'],
+                'school_code'           => $validated['school_code'],
+                'school_account_number' => $validated['school_account_number'],
+                'school_account_name'   => $validated['school_account_name'],
+                'bank'                  => $validated['bank'],
+                'bank_name'             => $validated['bank_name'],
+                'status'                => $status,
+            ]);
+
+            $codeRecord->update(['used' => true, 'used_at' => now()]);
+        });
 
         return redirect()->route('success')->with('type', 'public_school');
     }

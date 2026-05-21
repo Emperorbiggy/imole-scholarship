@@ -11,7 +11,9 @@
       "Bash(php artisan:*)",
       "Read(//c/xampp/mysql/bin/**)",
       "Bash(./mysql.exe -u root -e \"CREATE DATABASE IF NOT EXISTS imole_award CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
-      "Bash(composer show:*)"
+      "Bash(composer show:*)",
+      "Bash(php -r \"echo file_exists\\('config/jwt.php'\\) ? 'JWT config exists' : 'JWT config MISSING';\")",
+      "Bash(New-Item -ItemType File -Path \"database\\\\database.sqlite\" -Force)"
     ]
   }
 }

@@ -1,4 +1,5 @@
-import { Head, Link, router, usePage, useForm } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
+import AdminLayout from '@/Components/AdminLayout';
 
 const TYPE_LABELS = {
     awardee:        'Awardee (Student)',
@@ -46,7 +47,6 @@ function FileField({ label, url }) {
 export default function AdminShow({ record, type }) {
     const { props } = usePage();
     const flash = props.flash ?? {};
-    const { post: logout } = useForm();
     const status = STATUS_META[record.status] ?? STATUS_META.pending;
 
     function handleVerify() {
@@ -60,34 +60,9 @@ export default function AdminShow({ record, type }) {
     const fullName = [record.surname, record.first_name, record.middle_name].filter(Boolean).join(' ');
 
     return (
-        <>
+        <AdminLayout title={fullName}>
             <Head title={`${fullName} — Admin`} />
-            <div className="min-h-screen bg-slate-950 text-white">
-
-                {/* Top bar */}
-                <header className="border-b border-white/10 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-20">
-                    <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-300 flex items-center justify-center">
-                                <svg className="w-4 h-4 text-amber-900" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">Imole Award 2026</p>
-                                <h1 className="text-sm font-bold text-white leading-none">Admin Panel</h1>
-                            </div>
-                        </div>
-                        <Link
-                            href={route('admin.index')}
-                            className="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1"
-                        >
-                            ← All Registrations
-                        </Link>
-                    </div>
-                </header>
-
-                <div className="max-w-4xl mx-auto px-6 py-8">
+            <div className="max-w-4xl">
 
                     {/* Flash message */}
                     {flash.success && (
@@ -205,8 +180,7 @@ export default function AdminShow({ record, type }) {
                             </div>
                         )}
                     </div>
-                </div>
             </div>
-        </>
+        </AdminLayout>
     );
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AwardeeController;
+use App\Http\Controllers\SchoolCodeController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\PrivateSchoolController;
 use App\Http\Controllers\PublicSchoolController;
@@ -40,6 +41,9 @@ Route::post('/register/private-school', [PrivateSchoolController::class, 'store'
 Route::get('/register/public-school', [PublicSchoolController::class, 'create'])->name('register.public_school');
 Route::post('/register/public-school', [PublicSchoolController::class, 'store'])->name('register.public_school.store');
 
+// School code verification (public AJAX — used by registration forms)
+Route::post('/school-code/verify', [SchoolCodeController::class, 'verify'])->name('school-code.verify');
+
 // NIN Verification (AJAX)
 Route::post('/verify/nin', [NINVerificationController::class, 'verify'])->name('verify.nin');
 
@@ -60,7 +64,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Protected admin routes
     Route::middleware(['admin.jwt'])->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/',               [AdminController::class,   'index'])->name('index');
+        Route::get('/school-codes',   [SchoolCodeController::class, 'index'])->name('school-codes.index');
+        Route::post('/school-codes',  [SchoolCodeController::class, 'store'])->name('school-codes.store');
+        Route::delete('/school-codes/{id}', [SchoolCodeController::class, 'destroy'])->name('school-codes.destroy');
         Route::get('/{type}/{id}', [AdminController::class, 'show'])->name('show');
         Route::patch('/{type}/{id}/verify',  [AdminController::class, 'verify'])->name('verify');
         Route::patch('/{type}/{id}/reject',  [AdminController::class, 'reject'])->name('reject');

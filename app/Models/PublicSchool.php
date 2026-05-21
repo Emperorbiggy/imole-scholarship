@@ -11,6 +11,7 @@ class PublicSchool extends Model
         'first_name',
         'middle_name',
         'school',
+        'school_code',
         'school_account_number',
         'school_account_name',
         'bank',
