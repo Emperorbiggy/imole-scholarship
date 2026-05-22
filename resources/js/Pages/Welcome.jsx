@@ -47,6 +47,21 @@ export default function Welcome() {
             color: 'from-blue-500 to-indigo-400',
             border: 'border-blue-400',
         },
+        {
+            key: 'private_school',
+            title: 'Schools',
+            subtitle: '(Private)',
+            description: 'Private schools participating in the 2026 Imole Award programme.',
+            href: route('private.home'),
+            icon: (
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            ),
+            color: 'from-violet-500 to-purple-400',
+            border: 'border-violet-400',
+        },
     ];
 
     return (
@@ -112,7 +127,7 @@ export default function Welcome() {
                                 Select Your Category
                             </h2>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {categories.map((cat) => (
                                     <Link
                                         key={cat.key}
