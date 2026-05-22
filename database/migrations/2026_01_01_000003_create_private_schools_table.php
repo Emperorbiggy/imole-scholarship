@@ -15,8 +15,9 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('school');
             $table->string('school_code', 8);
-            $table->string('harmonized_bill_path');
-            $table->string('tax_clearance_no');
+            $table->string('bill_id');
+            $table->string('bill_invoice_status')->default('pending');
+            $table->string('harmonized_bill_path')->nullable();
             $table->string('school_account_number');
             $table->string('school_account_name');
             $table->string('bank');

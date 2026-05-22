@@ -174,7 +174,9 @@ export default function AdminShow({ record, type }) {
                             <div className="rounded-2xl bg-white/5 border border-white/10 p-6">
                                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5">Documents & Verification</p>
                                 <div className="space-y-4">
-                                    <Field label="Tax Clearance Number" value={record.tax_clearance_no} mono />
+                                    <Field label="Bill ID" value={record.bill_id} mono />
+                                    <Field label="Invoice Status" value={record.bill_invoice_status} />
+                                    <Field label="School Code" value={record.school_code} mono />
                                     <FileField label="Harmonized Bill Payment" url={record.harmonized_bill_url} />
                                 </div>
                             </div>

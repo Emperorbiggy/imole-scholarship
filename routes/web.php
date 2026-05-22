@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AwardeeController;
+use App\Http\Controllers\BillVerificationController;
 use App\Http\Controllers\DuplicateCheckController;
 use App\Http\Controllers\SchoolCodeController;
 use App\Http\Controllers\TeacherController;
@@ -50,7 +51,8 @@ Route::post('/check/nin',     [DuplicateCheckController::class, 'checkNin'])->na
 Route::post('/check/account', [DuplicateCheckController::class, 'checkAccount'])->name('check.account');
 
 // NIN Verification (AJAX)
-Route::post('/verify/nin', [NINVerificationController::class, 'verify'])->name('verify.nin');
+Route::post('/verify/nin',  [NINVerificationController::class,  'verify'])->name('verify.nin');
+Route::post('/verify/bill', [BillVerificationController::class, 'verify'])->name('verify.bill');
 
 // Paystack (AJAX)
 Route::get('/paystack/banks', [PaystackController::class, 'banks'])->name('paystack.banks');
