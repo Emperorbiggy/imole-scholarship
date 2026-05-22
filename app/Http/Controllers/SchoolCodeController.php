@@ -58,10 +58,10 @@ class SchoolCodeController extends Controller
             return response()->json(['valid' => false, 'message' => 'Invalid access code.'], 422);
         }
 
-        // Teachers may reuse a code after the school has registered with it
-        $forTeacher = $request->input('for') === 'teacher';
+        // Teachers and awardees may reuse a code after the school has registered with it
+        $forNonSchool = in_array($request->input('for'), ['teacher', 'awardee']);
 
-        if (!$forTeacher && $schoolCode->used) {
+        if (!$forNonSchool && $schoolCode->used) {
             return response()->json(['valid' => false, 'message' => 'This code has already been used.'], 422);
         }
 

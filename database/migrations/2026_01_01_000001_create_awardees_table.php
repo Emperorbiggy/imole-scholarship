@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('awardees', function (Blueprint $table) {
             $table->id();
+            $table->string('school_code', 8)->nullable();
             $table->string('surname');
             $table->string('first_name');
             $table->string('middle_name')->nullable();

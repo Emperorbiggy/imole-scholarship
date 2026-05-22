@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Awardee extends Model
 {
     protected $fillable = [
+        'school_code',
         'surname',
         'first_name',
         'middle_name',
