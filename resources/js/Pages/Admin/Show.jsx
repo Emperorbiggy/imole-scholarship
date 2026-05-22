@@ -144,6 +144,7 @@ export default function AdminShow({ record, type }) {
                                 <Field label="First Name" value={record.first_name} />
                                 <Field label="Middle Name" value={record.middle_name} />
                                 {record.school && <Field label="School" value={record.school} />}
+                                {record.designation && <Field label="Designation" value={record.designation} />}
                                 {record.nin && <Field label="NIN" value={record.nin} mono />}
                             </div>
                         </div>

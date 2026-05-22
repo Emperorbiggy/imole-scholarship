@@ -12,6 +12,7 @@ class Teacher extends Model
         'middle_name',
         'school_code',
         'school',
+        'designation',
         'nin',
         'subjects_taught',
         'appointment_letter_path',

@@ -36,6 +36,7 @@ export default function Teacher() {
         first_name:         '',
         middle_name:        '',
         school:             '',
+        designation:        '',
         nin:                '',
         subjects_taught:    '',
         appointment_letter: null,
@@ -98,6 +99,7 @@ export default function Teacher() {
 
         if (!data.surname.trim())          { setError('surname',            'Surname is required.');                     hasError = true; }
         if (!data.first_name.trim())       { setError('first_name',         'First name is required.');                  hasError = true; }
+        if (!data.designation)             { setError('designation',        'Please select your designation.');           hasError = true; }
         if (!data.nin || data.nin.length !== 11) { setError('nin',          'NIN must be 11 digits.');                   hasError = true; }
         if (!data.subjects_taught.trim())  { setError('subjects_taught',    'Please enter the subject(s) you teach.');    hasError = true; }
         if (!data.appointment_letter)      { setError('appointment_letter', 'Please upload your appointment letter.');    hasError = true; }
@@ -225,6 +227,38 @@ export default function Teacher() {
                             <Input type="text" value={data.school} readOnly className="cursor-not-allowed opacity-60" />
                             <p className="mt-1 text-xs text-slate-600">Pre-filled from your school code</p>
                         </FormField>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-300 mb-2">
+                                Designation <span className="text-red-400 ml-0.5">*</span>
+                            </label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {['Teacher', 'Principal'].map(opt => (
+                                    <button
+                                        key={opt}
+                                        type="button"
+                                        onClick={() => setData('designation', opt)}
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
+                                            data.designation === opt
+                                                ? 'bg-emerald-500/20 border-emerald-500/60 text-emerald-300'
+                                                : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
+                                        }`}
+                                    >
+                                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                            data.designation === opt ? 'border-emerald-400' : 'border-slate-600'
+                                        }`}>
+                                            {data.designation === opt && (
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                            )}
+                                        </span>
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+                            {errors.designation && (
+                                <p className="mt-1.5 text-xs text-red-400">{errors.designation}</p>
+                            )}
+                        </div>
 
                         <NINField
                             value={data.nin}

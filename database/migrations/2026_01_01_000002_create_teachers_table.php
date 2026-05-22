@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('school_code')->nullable();
             $table->string('school');
+            $table->string('designation')->nullable();
             $table->string('nin');
             $table->text('subjects_taught');
             $table->string('appointment_letter_path');
