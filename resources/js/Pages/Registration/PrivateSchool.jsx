@@ -194,7 +194,6 @@ export default function PrivateSchool() {
                         <BillIdField
                             value={data.bill_id}
                             onChange={val => setData('bill_id', val)}
-                            schoolName={data.school}
                             onBlockSubmit={setBillBlocked}
                             error={errors.bill_id}
                         />

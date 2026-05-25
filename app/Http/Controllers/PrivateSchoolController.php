@@ -42,26 +42,19 @@ class PrivateSchoolController extends Controller
             return back()->withErrors(['school_code' => 'This code is not valid for private school registration.']);
         }
 
-        // Re-verify the bill at submit time to get the current invoice status
-        $billResult     = $erms->findBill($validated['bill_id']);
-        $invoiceStatus  = 'pending';
+        // Capture invoice status for admin reference only — registration is always pending
+        $billResult    = $erms->findBill($validated['bill_id']);
+        $invoiceStatus = 'pending';
 
         if ($billResult['success'] && !empty($billResult['data']['status'])) {
             $invoiceStatus = $billResult['data']['data']['status'] ?? 'pending';
         }
 
-        // Determine registration status
-        $acc    = strtolower($validated['school_account_name']);
-        $school = strtolower($validated['school']);
-        $nameMatch = str_contains($acc, $school) || str_contains($school, $acc);
-
-        $status = ($nameMatch && $invoiceStatus === 'paid') ? 'verified' : 'pending';
-
         $path = $request->hasFile('harmonized_bill')
             ? $request->file('harmonized_bill')->store('harmonized_bills', 'public')
             : null;
 
-        DB::transaction(function () use ($validated, $path, $status, $invoiceStatus, $codeRecord) {
+        DB::transaction(function () use ($validated, $path, $invoiceStatus, $codeRecord) {
             PrivateSchool::create([
                 'surname'               => $validated['surname'],
                 'first_name'            => $validated['first_name'],
@@ -75,7 +68,7 @@ class PrivateSchoolController extends Controller
                 'school_account_name'   => $validated['school_account_name'],
                 'bank'                  => $validated['bank'],
                 'bank_name'             => $validated['bank_name'],
-                'status'                => $status,
+                'status'                => 'pending',
             ]);
 
             $codeRecord->update(['used' => true, 'used_at' => now()]);
